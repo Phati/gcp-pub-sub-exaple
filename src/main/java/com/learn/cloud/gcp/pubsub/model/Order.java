@@ -5,17 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 @Builder
-public class GenerateResumeRequest {
+public class Order {
     private String id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String mobileNumber;
-    private List<String> Skills;
+    private String productId;
+    private String price;
+    private String qty;
 }

@@ -24,17 +24,13 @@ public abstract class PubSubSubscription<T> {
 
     @PostConstruct
     private void subscribe() {
-        log.info("subscription : {}", subscription);
         pubSubTemplate.subscribe(subscription, message -> {
             try {
-                log.info("-------------Received event-------------");
                 PubsubMessage pubsubMessage = message.getPubsubMessage();
                 BaseEvent<T> event = CommonUtils._mapper.readValue(pubsubMessage.getData().toStringUtf8(), new TypeReference<>() {
                 });
-                log.info("--------type: {}", event.getType());
                 process(event, message);
             } catch (Exception e) {
-                log.info("--------error: {}", e.getMessage());
                 onError(e, message);
             }
         });

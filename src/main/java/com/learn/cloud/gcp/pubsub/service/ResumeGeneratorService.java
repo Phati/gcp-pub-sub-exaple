@@ -19,7 +19,7 @@ public class ResumeGeneratorService {
 
     public ResumeGeneratorService(GenericMessagePublisher genericMessagePublisher,
                                   @Value("${gcp.project.name}") String projectId,
-                                  @Value("${gcp.topic.name}") String topicName) {
+                                  @Value("${gcp.topic.name.resume.builder}") String topicName) {
         this.genericMessagePublisher = genericMessagePublisher;
         this.projectId = projectId;
         this.topicName = topicName;

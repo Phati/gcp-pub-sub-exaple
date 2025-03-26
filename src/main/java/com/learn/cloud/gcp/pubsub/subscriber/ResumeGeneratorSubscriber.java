@@ -17,7 +17,7 @@ public class ResumeGeneratorSubscriber extends PubSubSubscription<GenerateResume
     private final EventProcessorService eventProcessorService;
 
     public ResumeGeneratorSubscriber(PubSubTemplate pubSubTemplate,
-                                     @Value("${gcp.subscription.name}") String subscription,
+                                     @Value("${gcp.subscription.name.resume.builder}") String subscription,
                                      EventProcessorService eventProcessorService) {
         super(pubSubTemplate, subscription);
         this.eventProcessorService = eventProcessorService;
@@ -35,6 +35,6 @@ public class ResumeGeneratorSubscriber extends PubSubSubscription<GenerateResume
     @Override
     public void onError(Exception e, BasicAcknowledgeablePubsubMessage message) {
         log.info("--------error: {}", e.getMessage());
-        message.ack();
+        message.nack();
     }
 }
