@@ -15,6 +15,6 @@ public class EventProcessorService {
     }
 
     public void processCreateOrderEvent(BaseEvent<Order> createOrderEvent) {
-        log.info("Create Order request to be processed- order id: {}", createOrderEvent.getData().getId());
+        log.info("Create Order request to be processed- order id: {}", createOrderEvent.getData().getOrderId());
     }
 }

@@ -1,10 +1,12 @@
 package com.learn.cloud.gcp.pubsub.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.learn.cloud.gcp.pubsub.constants.ApplicationConstants;
 import com.learn.cloud.gcp.pubsub.model.BaseEvent;
 import com.learn.cloud.gcp.pubsub.model.GenerateResumeRequest;
 import com.learn.cloud.gcp.pubsub.model.GenerateResumeResponse;
 import com.learn.cloud.gcp.pubsub.publisher.GenericMessagePublisher;
+import com.learn.cloud.gcp.pubsub.utils.CommonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -33,7 +35,12 @@ public class ResumeGeneratorService {
         generateResumeEvent.setType(ApplicationConstants.GENERATE_RESUME_EVENT_TYPE);
         generateResumeEvent.setSource("pub-sub-service");
 
-        String messageId = genericMessagePublisher.publish(projectId, topicName, generateResumeEvent, null);
+        String messageId = null;
+        try {
+            messageId = genericMessagePublisher.publish(projectId, topicName, CommonUtils._mapper.writeValueAsString(generateResumeEvent));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         log.info("Request to generate resume successfully submitted with referenceNo: {}", generateResumeEvent.getReferenceNo());
         return GenerateResumeResponse.builder()
                 .messageId(messageId)

@@ -1,5 +1,6 @@
 package com.learn.cloud.gcp.pubsub.subscriber;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
 import com.google.cloud.spring.pubsub.support.BasicAcknowledgeablePubsubMessage;
 import com.learn.cloud.gcp.pubsub.constants.ApplicationConstants;
@@ -12,14 +13,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Log4j2
-public class OrderCreatorSubscriber extends PubSubSubscription<Order> {
+public class OrderCreatorSubscriber extends PubSubSubscription<BaseEvent<Order>> {
 
     private final EventProcessorService eventProcessorService;
 
     public OrderCreatorSubscriber(PubSubTemplate pubSubTemplate,
                                   @Value("${gcp.subscription.order}") String subscriptionOk,
                                   EventProcessorService eventProcessorService) {
-        super(pubSubTemplate, subscriptionOk);
+        super(pubSubTemplate, subscriptionOk, new TypeReference<>() {});
         this.eventProcessorService = eventProcessorService;
     }
 

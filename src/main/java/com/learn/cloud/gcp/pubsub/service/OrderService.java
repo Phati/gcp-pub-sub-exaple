@@ -1,10 +1,12 @@
 package com.learn.cloud.gcp.pubsub.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.learn.cloud.gcp.pubsub.constants.ApplicationConstants;
 import com.learn.cloud.gcp.pubsub.model.BaseEvent;
 import com.learn.cloud.gcp.pubsub.model.Order;
 import com.learn.cloud.gcp.pubsub.model.OrderResponse;
 import com.learn.cloud.gcp.pubsub.publisher.GenericMessagePublisher;
+import com.learn.cloud.gcp.pubsub.utils.CommonUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -34,8 +36,13 @@ public class OrderService {
         generateResumeEvent.setType(ApplicationConstants.CREATE_ORDER_EVENT_TYPE);
         generateResumeEvent.setSource("pub-sub-service");
 
-        String messageId = genericMessagePublisher.publish(projectId, topicName, generateResumeEvent, order.getProductId());
-        log.info("Request to Create Order successfully submitted with referenceNo: {}", generateResumeEvent.getReferenceNo());
+        String messageId = null;
+        try {
+            messageId = genericMessagePublisher.publishWithOrderingKey(projectId, topicName, CommonUtils._mapper.writeValueAsString(generateResumeEvent), order.getProductId());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        log.info("Request to Create Order successfully submitted with referenceNo: {} , order_id: {}", generateResumeEvent.getReferenceNo(),order.getOrderId());
 
         return OrderResponse.builder()
                 .messageId(messageId)
