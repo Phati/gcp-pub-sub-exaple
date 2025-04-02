@@ -39,6 +39,26 @@ public class GenericMessagePublisher {
         return referenceNo.get();
     }
 
+    public <T> String publish1(String projectId, String topic, String message, String orderingKey) {
+        TopicName topicName = TopicName.of(projectId, topic);
+        AtomicReference<String> referenceNo = new AtomicReference<>("");
+        PubsubMessage.Builder pubSubMessageBuilder = PubsubMessage.newBuilder();
+        pubSubMessageBuilder.setData(ByteString.copyFromUtf8(message));
+        pubSubMessageBuilder.setOrderingKey(orderingKey);
+
+        CompletableFuture<String> future = pubSubTemplate.publish(topicName.toString(), pubSubMessageBuilder.build());
+        future.whenComplete((messageId, throwable) -> {
+            if (Objects.isNull(throwable)) {
+                log.debug("Successfully published with messageId: {}", messageId);
+                referenceNo.set(messageId);
+            } else {
+                log.error("Exception while publishing");
+            }
+        });
+
+        return referenceNo.get();
+    }
+
     public <T> String publishWithOrderingKey(String projectId, String topic, String message, String orderingKey) {
         TopicName topicName = TopicName.of(projectId, topic);
         AtomicReference<String> referenceNo = new AtomicReference<>("");
